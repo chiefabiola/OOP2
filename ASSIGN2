@@ -1,0 +1,71 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class PetSelector extends JFrame {
+    
+    private JRadioButton birdButton, catButton, dogButton, rabbitButton, pigButton;
+    private ButtonGroup petGroup;
+
+    public PetSelector() {
+        // Set up the frame
+        setTitle("RadioButtonDemo");
+        setSize(300, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // Create radio buttons
+        birdButton = new JRadioButton("Bird");
+        catButton = new JRadioButton("Cat");
+        dogButton = new JRadioButton("Dog");
+        rabbitButton = new JRadioButton("Rabbit");
+        pigButton = new JRadioButton("Pig");
+
+        // Add buttons to button group
+        petGroup = new ButtonGroup();
+        petGroup.add(birdButton);
+        petGroup.add(catButton);
+        petGroup.add(dogButton);
+        petGroup.add(rabbitButton);
+        petGroup.add(pigButton);
+
+        // Create panel and add radio buttons
+        JPanel radioPanel = new JPanel();
+        radioPanel.setLayout(new BoxLayout(radioPanel, BoxLayout.Y_AXIS));
+        radioPanel.add(birdButton);
+        radioPanel.add(catButton);
+        radioPanel.add(dogButton);
+        radioPanel.add(rabbitButton);
+        radioPanel.add(pigButton);
+
+        // Add action listeners to buttons
+        ActionListener listener = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String pet = "";
+                if (birdButton.isSelected()) pet = "Bird";
+                else if (catButton.isSelected()) pet = "Cat";
+                else if (dogButton.isSelected()) pet = "Dog";
+                else if (rabbitButton.isSelected()) pet = "Rabbit";
+                else if (pigButton.isSelected()) pet = "Pig";
+                
+                JOptionPane.showMessageDialog(null, "You selected: " + pet);
+            }
+        };
+
+        birdButton.addActionListener(listener);
+        catButton.addActionListener(listener);
+        dogButton.addActionListener(listener);
+        rabbitButton.addActionListener(listener);
+        pigButton.addActionListener(listener);
+
+        // Add components to frame
+        add(radioPanel, BorderLayout.CENTER);
+    }
+
+    public static void main(String[] args) {
+        // Create and display the frame
+        PetSelector frame = new PetSelector();
+        frame.setVisible(true);
+    }
+}
