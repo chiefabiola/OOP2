@@ -1,0 +1,140 @@
+//this is the comlete code for the registration form, which includes connection to the database
+
+package com.mycompany.registrationform;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class RegistrationForm extends JFrame {
+
+    private JTextField nameField, mobileField;
+    private JRadioButton maleButton, femaleButton;
+    private JComboBox<String> dayCombo, monthCombo, yearCombo;
+    private JTextArea addressField;
+    private JCheckBox termsCheckBox;
+    private JButton submitButton, resetButton;
+
+    public RegistrationForm() {
+        setTitle("Registration Form");
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        JLabel nameLabel = new JLabel("Name:");
+        nameField = new JTextField(20);
+
+        JLabel mobileLabel = new JLabel("Mobile:");
+        mobileField = new JTextField(20);
+
+        JLabel genderLabel = new JLabel("Gender:");
+        maleButton = new JRadioButton("Male");
+        femaleButton = new JRadioButton("Female");
+        ButtonGroup genderGroup = new ButtonGroup();
+        genderGroup.add(maleButton);
+        genderGroup.add(femaleButton);
+
+        JLabel dobLabel = new JLabel("DOB:");
+        String[] days = {"1", "2", "3", ..., "31"};
+        String[] months = {"Jan", "Feb", "Mar", ..., "Dec"};
+        String[] years = {"1980", "1981", ..., "2000"};
+        dayCombo = new JComboBox<>(days);
+        monthCombo = new JComboBox<>(months);
+        yearCombo = new JComboBox<>(years);
+
+        JLabel addressLabel = new JLabel("Address:");
+        addressField = new JTextArea(3, 20);
+        addressField.setLineWrap(true);
+        addressField.setWrapStyleWord(true);
+
+        termsCheckBox = new JCheckBox("Accept Terms And Conditions.");
+
+        submitButton = new JButton("Submit");
+        resetButton = new JButton("Reset");
+
+        gbc.gridx = 0; gbc.gridy = 0; add(nameLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = 0; add(nameField, gbc);
+        gbc.gridx = 0; gbc.gridy = 1; add(mobileLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = 1; add(mobileField, gbc);
+        gbc.gridx = 0; gbc.gridy = 2; add(genderLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = 2; add(maleButton, gbc);
+        gbc.gridx = 2; gbc.gridy = 2; add(femaleButton, gbc);
+        gbc.gridx = 0; gbc.gridy = 3; add(dobLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = 3; add(dayCombo, gbc);
+        gbc.gridx = 2; gbc.gridy = 3; add(monthCombo, gbc);
+        gbc.gridx = 3; gbc.gridy = 3; add(yearCombo, gbc);
+        gbc.gridx = 0; gbc.gridy = 4; add(addressLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = 4; gbc.gridwidth = 3;
+        add(new JScrollPane(addressField), gbc);
+        gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 4;
+        add(termsCheckBox, gbc);
+        gbc.gridx = 1; gbc.gridy = 6; gbc.gridwidth = 1;
+        add(submitButton, gbc);
+        gbc.gridx = 2; gbc.gridy = 6;
+        add(resetButton, gbc);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(500, 500);
+        setLocationRelativeTo(null);
+
+        // Add action listener for the submit button
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (termsCheckBox.isSelected()) {
+                    saveDataToDatabase();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please accept terms and conditions.");
+                }
+            }
+        });
+    }
+
+    private void saveDataToDatabase() {
+        String name = nameField.getText();
+        String mobile = mobileField.getText();
+        String gender = maleButton.isSelected() ? "Male" : "Female";
+        String dob = yearCombo.getSelectedItem() + "-" +
+                     monthCombo.getSelectedItem() + "-" +
+                     dayCombo.getSelectedItem();
+        String address = addressField.getText();
+
+        // Database connection and insertion
+        String url = "jdbc:mysql://localhost:3306/RegistrationDB";
+        String user = "root";
+        String password = "35781202@Ja";
+        String query = "INSERT INTO registration_form (name, mobile, gender, dob, address) VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            
+            pstmt.setString(1, name);
+            pstmt.setString(2, mobile);
+            pstmt.setString(3, gender);
+            pstmt.setString(4, dob);
+            pstmt.setString(5, address);
+
+            int rowsInserted = pstmt.executeUpdate();
+            if (rowsInserted > 0) {
+                JOptionPane.showMessageDialog(this, "Data saved successfully.");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error saving data: " + ex.getMessage());
+        }
+    }
+
+    public static void main(String[] args)
+{
+        SwingUtilities.invokeLater(() -> {
+            RegistrationForm form = new RegistrationForm();
+            form.setVisible(true);
+        });
+    }
+}
+
